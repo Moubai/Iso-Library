@@ -4,9 +4,9 @@ Vibe codé avec Claude.ai opus.
 Médiathèque de jeux vidéo au format ISO, avec métadonnées RAWG.
 Interface style Plex/Jellyfin. Développé avec Tauri 2 (Rust + WebView natif).
 
-## Prérequis
+## Prérequis pour compiler le code source
 
-- **Rust** : https://rustup.rs (rustc >= 1.77)
+- **Rust** : https://rustup.rs (rustc >= 1.77) (recommandation de l'installer via winget, ça évite les merdes)
 - **Node.js** >= 18 : https://nodejs.org
 - **Tauri CLI v2** et dépendances Windows :
   - Visual Studio Build Tools 2022 (composant "Développement Desktop C++")
