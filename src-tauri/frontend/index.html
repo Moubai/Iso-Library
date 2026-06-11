@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://media.rawg.io data: blob:; connect-src 'self' ipc: http://ipc.localhost; font-src 'self'" />
+  <title>ISO Library</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-header"><h1>ISO Library</h1></div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-view="library">
+        <span class="icon">&#9783;</span> Bibliothèque
+      </button>
+      <button class="nav-btn" data-view="settings">
+        <span class="icon">&#9881;</span> Paramètres
+      </button>
+    </nav>
+    <div class="sidebar-stats">
+      <div class="stat"><span class="stat-value" id="stat-total">0</span><span class="stat-label">Jeux</span></div>
+      <div class="stat"><span class="stat-value" id="stat-meta">0</span><span class="stat-label">Avec métadonnées</span></div>
+      <div class="stat"><span class="stat-value stat-review" id="stat-review">0</span><span class="stat-label">À réviser</span></div>
+    </div>
+    <div class="api-counter">
+      <div class="api-counter-label">Requêtes RAWG (session)</div>
+      <div class="api-counter-bar"><div class="api-counter-fill" id="api-fill" style="width:0%"></div></div>
+      <div class="api-counter-text" id="api-counter-text">0 / 20 000</div>
+    </div>
+    <div class="sidebar-footer">
+      <p class="rawg-credit">
+        Métadonnées fournies par<br>
+        <a href="https://rawg.io" target="_blank">RAWG Video Games Database</a><br>
+        <a href="https://rawg.io/apidocs" target="_blank">rawg.io/apidocs</a>
+      </p>
+    </div>
+  </aside>
+
+  <main id="main-content">
+    <div id="view-library" class="view active">
+      <div class="toolbar">
+        <input type="search" id="search-input" placeholder="Rechercher un jeu..." autocomplete="off" />
+        <div class="toolbar-controls">
+          <button class="filter-btn review-filter" id="filter-review" title="N'afficher que les jeux à réviser">À réviser</button>
+          <select class="sort-select" id="sort-select">
+            <option value="alpha-asc">A → Z</option>
+            <option value="alpha-desc">Z → A</option>
+            <option value="year-desc">Année ↓</option>
+            <option value="year-asc">Année ↑</option>
+            <option value="rating-desc">Note ↓</option>
+            <option value="rating-asc">Note ↑</option>
+          </select>
+        </div>
+        <div class="toolbar-actions">
+          <button id="btn-scan" class="btn btn-secondary btn-sm">Scanner</button>
+          <button id="btn-fetch-meta" class="btn btn-primary btn-sm">Récupérer métadonnées</button>
+        </div>
+      </div>
+
+      <div id="status-bar" class="status-bar hidden"></div>
+
+      <div id="progress-wrap" class="hidden">
+        <div class="progress-header">
+          <span class="progress-label" id="progress-label">Récupération en cours...</span>
+          <span class="progress-count" id="progress-count">0 / 0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <div id="game-grid-container">
+        <div id="game-grid"></div>
+        <div id="scroll-sentinel"></div>
+        <div id="load-more-indicator" class="hidden">Chargement...</div>
+      </div>
+      <div id="empty-state" class="empty-state hidden">
+        <p>Aucun jeu trouvé.</p>
+        <p class="hint">Ajoutez des répertoires dans <strong>Paramètres</strong> puis cliquez <strong>Scanner</strong>.</p>
+      </div>
+    </div>
+
+    <div id="view-settings" class="view">
+      <div class="settings-section">
+        <h2>Clé API RAWG</h2>
+        <p class="help-text">Obtenez votre clé gratuite sur <strong>rawg.io/apidocs</strong>. Le plan gratuit permet 20 000 requêtes par mois.</p>
+        <div class="input-row">
+          <input type="password" id="api-key-input" placeholder="Entrez votre clé API RAWG..." maxlength="128" autocomplete="off" />
+          <button id="btn-save-key" class="btn btn-primary">Enregistrer</button>
+        </div>
+        <div id="api-key-status" class="status-indicator"></div>
+      </div>
+      <div class="settings-section">
+        <h2>Répertoires de scan</h2>
+        <p class="help-text">Fichiers supportés : <strong>.iso</strong>, <strong>.zip</strong>, <strong>.7z</strong></p>
+        <button id="btn-add-dir" class="btn btn-secondary">Ajouter un répertoire</button>
+        <ul id="dir-list" class="dir-list"></ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal détail jeu -->
+<div id="game-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close" aria-label="Fermer">&times;</button>
+    <div class="modal-body">
+      <div class="modal-cover-col">
+        <img id="modal-cover" src="" alt="" class="modal-cover" />
+      </div>
+      <div class="modal-info-col">
+        <h2 id="modal-title"></h2>
+        <div class="modal-meta" id="modal-meta"></div>
+        <p id="modal-desc" class="modal-desc"></p>
+        <div class="modal-path-row">
+          <span class="label">Fichier :</span>
+          <code id="modal-path"></code>
+        </div>
+        <div class="modal-actions" id="modal-actions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal association manuelle -->
+<div id="associate-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div class="associate-content">
+    <button class="modal-close" id="associate-close" aria-label="Fermer">&times;</button>
+    <div class="associate-header">
+      <h3 id="associate-title">Associer un jeu RAWG</h3>
+      <div class="associate-search-row">
+        <input type="search" id="associate-search" placeholder="Rechercher sur RAWG..." autocomplete="off" />
+        <button id="btn-associate-search" class="btn btn-primary btn-sm">Rechercher</button>
+      </div>
+      <p class="associate-hint" id="associate-hint"></p>
+    </div>
+    <div class="associate-results" id="associate-results">
+      <p class="associate-empty">Entrez un titre pour rechercher.</p>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # ISO Library
-
+Vibe codé avec Claude.ai opus
 Médiathèque de jeux vidéo au format ISO, avec métadonnées RAWG.
 Interface style Plex/Jellyfin. Développé avec Tauri 2 (Rust + WebView natif).
 
-## Prérequis pour compiler
+## Prérequis
 
 - **Rust** : https://rustup.rs (rustc >= 1.77)
 - **Node.js** >= 18 : https://nodejs.org
@@ -31,26 +31,52 @@ npm run build
 4. Revenir dans **Bibliothèque** et cliquer **Scanner**
 5. Cliquer **Récupérer métadonnées** pour enrichir la bibliothèque
 
-## Architecture
+## TO DO
+Remplacer Rawg par igdb.com
+
+## folder
 
 ```
 iso-library/
-├── src/                    Frontend (HTML/CSS/JS vanilla)
-│   ├── index.html
-│   ├── style.css
-│   └── main.js
-├── src-tauri/              Backend Rust
-│   ├── src/
-│   │   ├── main.rs         Point d'entrée Tauri
-│   │   ├── lib.rs
-│   │   ├── commands.rs     Commandes IPC exposées au frontend
-│   │   ├── db.rs           Couche SQLite (requêtes paramétrées)
-│   │   ├── rawg.rs         Client API RAWG
-│   │   └── scanner.rs      Scan filesystem .iso
-│   ├── Cargo.toml
-│   └── tauri.conf.json     Configuration + CSP
-├── SECURITY_AUDIT_1.md
-└── README.md
+│   package.json
+│   README.md
+│
+├───docs
+│       CHANGELOG.md
+│       SECURITY_AUDIT_1.md
+│
+├───Release
+│       ISO Library_0.1.8_x64-setup.exe
+│
+└───src-tauri
+    │   build.rs
+    │   Cargo.toml
+    │   tauri.conf.json
+    │
+    ├───capabilities
+    │       default.json
+    │
+    ├───frontend
+    │       index.html
+    │       main.js
+    │       style.css
+    │
+    ├───icons
+    │       128x128.png
+    │       128x128@2x.png
+    │       32x32.png
+    │       icon.icns
+    │       icon.ico
+    │       icon.png
+    │
+    └───src
+            commands.rs
+            db.rs
+            error.rs
+            lib.rs
+            main.rs
+            rawg.rs
+            scanner.rs
 ```
 
 ## Données locales

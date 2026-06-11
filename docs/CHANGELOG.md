@@ -7,6 +7,37 @@ Versionnage selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [0.1.9] - 2026-05-28
+
+### Ajouté
+
+- **Mention légale RAWG** : crédit "Métadonnées fournies par RAWG Video Games Database"
+  avec lien vers rawg.io affiché dans le pied de la sidebar (conformité conditions d'utilisation API).
+- **Barre de progression** pendant la récupération des métadonnées : affiche le jeu en
+  cours, le compteur X/Total et un indicateur visuel. Utilise `app.emit()` côté Rust et
+  `window.__TAURI__.event.listen()` côté JS.
+- **Compteur de requêtes API** dans la sidebar : barre de progression visuelle et texte
+  "X / 20 000" (limite mensuelle du plan gratuit RAWG). Couleur orange à 70%, rouge à 90%.
+  Le compteur est en mémoire (reset au redémarrage), basé sur `AtomicU64`.
+- **Filtre "À réviser"** : bouton toggle dans la toolbar pour n'afficher que les jeux
+  nécessitant une révision manuelle.
+- **Tri de la grille** : sélecteur A→Z, Z→A, Année ↓, Année ↑, Note ↓, Note ↑.
+- **Correction du champ de recherche dans la modale d'association** : la saisie
+  utilisateur est automatiquement nettoyée (points → espaces, tags `(USA)` `[NTSC-U]`
+  supprimés, suffixe `-Groupe` retiré) avant l'envoi à RAWG. La valeur nettoyée est
+  réaffichée dans le champ pour transparence.
+- **Support `.zip` et `.7z`** dans le scanner filesystem, en plus de `.iso`.
+  Taille minimale adaptée (1 Ko pour archives, 32 Ko pour ISO).
+- **Nouvelle commande Tauri `get_api_stats`** : retourne `(used, limit)`.
+
+### Modifié
+
+- `AppState` : ajout du champ `api_requests_used: AtomicU64`.
+- `fetch_metadata_batch` prend maintenant `app: tauri::AppHandle` pour émettre les
+  événements de progression.
+
+---
+
 ## [0.1.8] - 2026-05-26
 
 ### Ajouté
