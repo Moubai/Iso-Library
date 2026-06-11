@@ -1,5 +1,5 @@
 # ISO Library
-Vibe codé avec Claude.ai opus
+Vibe codé avec Claude.ai opus.
 Médiathèque de jeux vidéo au format ISO, avec métadonnées RAWG.
 Interface style Plex/Jellyfin. Développé avec Tauri 2 (Rust + WebView natif).
 
